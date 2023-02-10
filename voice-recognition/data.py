@@ -107,7 +107,7 @@ class CustomDataset(Dataset):
         magnitude = np.transpose(magnitude_, (2, 0, 1))
 
         if self.mode == 'train':
-            print("   *index is {}/{} path_list = {}".format(i, len(self.target_list), len(self.path_list)))
+            # print("   *index is {}/{} path_list = {}".format(i, len(self.target_list), len(self.path_list)))
             target = self.target_list[i]
             return {
                 'magnitude': torch.tensor(magnitude, dtype=torch.float32),
