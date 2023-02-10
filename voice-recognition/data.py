@@ -13,12 +13,19 @@ class CustomTokenizer():
         self.max_vocab_size = max_vocab_size
 
     def fit(self, sentence_list):
+        id = 0
         for sentence in sentence_list:
+            print("sentence: {} \"{}\"".format(len(sentence), sentence))
             for char in sentence:
                 try:
                     self.char_count[char] += 1
                 except:
                     self.char_count[char] = 1
+
+            if id > 100:
+                exit(0)
+            else:
+                id += 1
         self.char_count = dict(sorted(self.char_count.items(), key=self.sort_target, reverse=True))
 
         self.txt2idx = {'<pad>': 0, '<unk>': 1, '<sos>': 2, '<eos>': 3}
@@ -105,6 +112,7 @@ class CustomDataset(Dataset):
         magnitude = np.transpose(magnitude_, (2, 0, 1))
 
         if self.mode == 'train':
+            print("   *index is {}/{} path_list = {}".format(i, len(self.target_list), len(self.path_list)))
             target = self.target_list[i]
             return {
                 'magnitude': torch.tensor(magnitude, dtype=torch.float32),

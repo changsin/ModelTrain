@@ -43,6 +43,19 @@ def glob_folders(folder, file_type='*'):
     return paths
 
 
+def glob_files_all(folder, file_type='*'):
+    print("Searching {}".format(folder))
+    sub_folders = glob_folders(folder)
+    print("Found {} sub folders".format(len(sub_folders)))
+
+    files = []
+    for sub_folder in sub_folders:
+        tmp_files = glob_files(sub_folder, file_type)
+        files.extend(tmp_files)
+    print("Found {} files".format(len(files)))
+    return files
+
+
 def to_file(path, data):
     """
     save data to path
