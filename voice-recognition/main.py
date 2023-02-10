@@ -354,6 +354,6 @@ if __name__ == '__main__':
                 "total_train_acc": total_train_acc,   "total_valid_acc": total_valid_acc
                        })
 
-            save_checkpoint(checkpoint=epoch, dir='.')
+            save_checkpoint(checkpoint=epoch, dir='./checkpoint')
             # DONOTCHANGE (You can decide how often you want to save the model)
             # nsml.save(epoch)
