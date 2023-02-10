@@ -95,6 +95,54 @@ def accuracy_function(real, pred):
 
     return torch.sum(accuracies) / torch.sum(mask)
 
+def glob_files(folder, file_type='*'):
+    search_string = os.path.join(folder, file_type)
+    files = glob.glob(search_string)
+
+    print('Searching ', search_string)
+    paths = []
+    for f in files:
+      if os.path.isdir(f):
+        sub_paths = glob_files(f + '/')
+        paths += sub_paths
+      else:
+        paths.append(f)
+
+    # We sort the images in alphabetical order to match them
+    #  to the annotation files
+    paths.sort()
+
+    return paths
+
+
+def glob_folders(folder, file_type='*'):
+    search_string = os.path.join(folder, file_type)
+    files = glob.glob(search_string)
+
+    print('Searching ', search_string)
+    paths = []
+    for f in files:
+      if os.path.isdir(f):
+        paths.append(f)
+
+    # We sort the images in alphabetical order to match them
+    #  to the annotation files
+    paths.sort()
+
+    return paths
+
+
+def glob_files_all(folder, file_type='*'):
+    print("Searching {}".format(folder))
+    sub_folders = glob_folders(folder)
+    print("Found {} sub folders".format(len(sub_folders)))
+
+    files = []
+    for sub_folder in sub_folders:
+        tmp_files = glob_files(sub_folder, file_type)
+        files.extend(tmp_files)
+    print("Found {} files".format(len(files)))
+    return files
 
 def path_loader(root_path, is_test=False):
     if is_test:
@@ -104,7 +152,9 @@ def path_loader(root_path, is_test=False):
 
     if args.mode == 'train':
         train_path = os.path.join(root_path, 'train')
-        file_list = sorted(glob(os.path.join(train_path, 'train_data', '*')))
+        file_list = sorted(glob_files_all(os.path.join(train_path, 'train_data', '*')))
+        print("Data files loaded {}".format(len(file_list)))
+        # file_list = sorted(glob(os.path.join(train_path, 'train_data', '*')))
         label = pd.read_csv(os.path.join(train_path, 'train_label.txt'))
 
     return file_list, label
@@ -205,7 +255,7 @@ if __name__ == '__main__':
         nsml.paused(scope=locals())
 
     if args.mode == 'train':
-        DATASET_PATH = "/Users/changsin/PycharmProjects/ModelTrain/data/senior_voice_commands"
+        DATASET_PATH = "../data/senior_voice_commands"
         file_list, label = path_loader(DATASET_PATH)
 
         split_num = int(len(label) * 0.9)
