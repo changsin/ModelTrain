@@ -97,7 +97,7 @@ def accuracy_function(real, pred):
 
 def glob_files(folder, file_type='*'):
     search_string = os.path.join(folder, file_type)
-    files = glob.glob(search_string)
+    files = glob(search_string)
 
     print('Searching ', search_string)
     paths = []
@@ -117,7 +117,7 @@ def glob_files(folder, file_type='*'):
 
 def glob_folders(folder, file_type='*'):
     search_string = os.path.join(folder, file_type)
-    files = glob.glob(search_string)
+    files = glob(search_string)
 
     print('Searching ', search_string)
     paths = []
