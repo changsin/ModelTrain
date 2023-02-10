@@ -2,6 +2,7 @@ import argparse
 import gc
 import os
 import pickle
+import wandb
 from glob import glob
 
 import nsml
@@ -226,6 +227,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', type=int, default=1)
     parser.add_argument('--iteration', type=str, default='0')
     parser.add_argument('--pause', type=int, default=0)
+    parser.add_argument("--path_in", action="store", dest="path_in", type=str)
     args = parser.parse_args()
 
     # label = pd.read_csv("/Users/changsin/PycharmProjects/ModelTrain/data/senior_voice_commands/train_label.txt")
@@ -303,6 +305,7 @@ if __name__ == '__main__':
         optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
         criterion = nn.CrossEntropyLoss()
 
+        wandb.init("voice-recognition")
         for epoch in range(args.epochs):
             gc.collect()
             total_train_loss, total_valid_loss = 0, 0
@@ -346,6 +349,11 @@ if __name__ == '__main__':
                 'tokenizer': tokenizer,
                 'device': device
             }
+
+            wandb.log({
+                "total_train_loss": total_train_loss, "total_valid_loss": total_valid_loss,
+                "total_train_acc": total_train_acc,   "total_valid_acc": total_valid_acc
+                       })
 
             # DONOTCHANGE (You can decide how often you want to save the model)
             nsml.save(epoch)
