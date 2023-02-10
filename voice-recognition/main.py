@@ -280,6 +280,9 @@ if __name__ == '__main__':
         train_dataset = CustomDataset(train_file_list, train_tokens)
         valid_dataset = CustomDataset(val_file_list, val_tokens)
 
+        print("train_tokens: {} val_tokens: {}".format(len(train_tokens), len(val_tokens)))
+        print("train_file_list: {} val_file_list: {}".format(len(train_file_list), len(val_file_list)))
+
         train_dataloader = DataLoader(train_dataset,
                                       batch_size=batch_size,
                                       shuffle=True)
