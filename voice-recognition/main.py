@@ -328,15 +328,11 @@ if __name__ == '__main__':
                 total_valid_loss += batch_loss
                 total_valid_acc += batch_acc
 
-            print('=================loss=================')
+            print('=================Epoch: {}'.format(epoch))
             print(f'total_train_loss: {total_train_loss}')
             print(f'total_valid_loss: {total_valid_loss}')
-            print('\n')
-
-            print('=================acc=================')
             print(f'total_train_acc : {total_train_acc}')
             print(f'total_valid_acc : {total_valid_acc}')
-            print('\n')
 
             dict_for_infer = {
                 'model': model.state_dict(),
