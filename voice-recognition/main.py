@@ -99,7 +99,7 @@ def glob_files(folder, file_type='*'):
     search_string = os.path.join(folder, file_type)
     files = glob(search_string)
 
-    print('Searching ', search_string)
+    print('Searching files ', search_string)
     paths = []
     for f in files:
       if os.path.isdir(f):
@@ -119,7 +119,7 @@ def glob_folders(folder, file_type='*'):
     search_string = os.path.join(folder, file_type)
     files = glob(search_string)
 
-    print('Searching ', search_string)
+    print('Searching folders {} {}'.format(search_string, files))
     paths = []
     for f in files:
       if os.path.isdir(f):
@@ -133,16 +133,18 @@ def glob_folders(folder, file_type='*'):
 
 
 def glob_files_all(folder, file_type='*'):
-    print("Searching {}".format(folder))
+    print("Searching in {} from {}".format(folder, os.getcwd()))
     sub_folders = glob_folders(folder)
     print("Found {} sub folders".format(len(sub_folders)))
 
     files = []
     for sub_folder in sub_folders:
         tmp_files = glob_files(sub_folder, file_type)
-        files.extend(tmp_files)
+        if tmp_files:
+            files.extend(tmp_files)
     print("Found {} files".format(len(files)))
     return files
+
 
 def path_loader(root_path, is_test=False):
     if is_test:
@@ -152,10 +154,11 @@ def path_loader(root_path, is_test=False):
 
     if args.mode == 'train':
         train_path = os.path.join(root_path, 'train')
-        file_list = sorted(glob_files_all(os.path.join(train_path, 'train_data', '*')))
+        file_list = sorted(glob_files_all(os.path.join(train_path, 'train_data', '')))
         print("Data files loaded {}".format(len(file_list)))
         # file_list = sorted(glob(os.path.join(train_path, 'train_data', '*')))
         label = pd.read_csv(os.path.join(train_path, 'train_label.txt'))
+        print("Loaded label {}".format(label))
 
     return file_list, label
 
