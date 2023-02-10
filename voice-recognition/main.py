@@ -7,7 +7,7 @@ from glob import glob
 import nsml
 import pandas as pd
 import torch
-from nsml import DATASET_PATH
+# from nsml import DATASET_PATH
 from torch import nn
 from torch.utils.data import DataLoader
 
@@ -105,7 +105,7 @@ def path_loader(root_path, is_test=False):
     if args.mode == 'train':
         train_path = os.path.join(root_path, 'train')
         file_list = sorted(glob(os.path.join(train_path, 'train_data', '*')))
-        label = pd.read_csv(os.path.join(train_path, 'train_label'))
+        label = pd.read_csv(os.path.join(train_path, 'train_label.txt'))
 
     return file_list, label
 
@@ -175,6 +175,20 @@ if __name__ == '__main__':
     parser.add_argument('--pause', type=int, default=0)
     args = parser.parse_args()
 
+    # label = pd.read_csv("/Users/changsin/PycharmProjects/ModelTrain/data/senior_voice_commands/train_label.txt")
+    # train_label = label.iloc[:10]
+    # val_label = label.iloc[10:]
+    #
+    # print("train_label {} string {}".format(len(train_label), len(train_label.to_string())))
+    # tokenizer = CustomTokenizer(max_length=30, max_vocab_size=5000)
+    # # for sentence in train_label.to_string():
+    # #     print(sentence)
+    #
+    # tokenizer.fit(train_label.iloc[:, 1])
+    #
+    # print(train_label)
+    # exit(0)
+
     max_length = 30
     batch_size = 32
     num_layers = 6
@@ -187,22 +201,11 @@ if __name__ == '__main__':
     device = torch.device("cuda:0")
     max_vocab_size = 5000
 
-    model = Transformer(
-        num_layers=num_layers,
-        d_model=d_model,
-        num_heads=num_heads,
-        dff=dff,
-        target_size=max_vocab_size + 4,
-        pe_target=max_length + 1,
-        device=device,
-        rate=dropout_rate
-    )
-
-    bind_model(model=model, parser=args)
     if args.pause:
         nsml.paused(scope=locals())
 
     if args.mode == 'train':
+        DATASET_PATH = "/Users/changsin/PycharmProjects/ModelTrain/data/senior_voice_commands"
         file_list, label = path_loader(DATASET_PATH)
 
         split_num = int(len(label) * 0.9)
@@ -213,12 +216,12 @@ if __name__ == '__main__':
         val_label = label.iloc[split_num:]
 
         tokenizer = CustomTokenizer(max_length=max_length, max_vocab_size=max_vocab_size)
-        tokenizer.fit(train_label.text)
+        tokenizer.fit(train_label.iloc[:, 1])
 
         target_size = len(tokenizer.txt2idx)
 
-        train_tokens = tokenizer.txt2token(train_label.text)
-        val_tokens = tokenizer.txt2token(val_label.text)
+        train_tokens = tokenizer.txt2token(train_label.iloc[:, 1])
+        val_tokens = tokenizer.txt2token(val_label.iloc[:, 1])
         train_dataset = CustomDataset(train_file_list, train_tokens)
         valid_dataset = CustomDataset(val_file_list, val_tokens)
 
@@ -229,6 +232,19 @@ if __name__ == '__main__':
         valid_dataloader = DataLoader(valid_dataset,
                                       batch_size=batch_size,
                                       shuffle=False)
+
+        model = Transformer(
+            num_layers=num_layers,
+            d_model=d_model,
+            num_heads=num_heads,
+            dff=dff,
+            target_size=max_vocab_size + 4,
+            pe_target=max_length + 1,
+            device=device,
+            rate=dropout_rate
+        )
+
+        bind_model(model=model, parser=args)
 
         model = model.to(device)
         optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
