@@ -31,8 +31,8 @@ def get_labels_from_xls(filename):
 
             if row[ID_FILE_NAME].value and row[ID_LABEL_TEXT].value and row[ID_SOUND_TEXT].value:
                 data_filename = Path(row[ID_FILE_NAME].value).stem
-                label_text = row[ID_LABEL_TEXT].value
-                sound_text = row[ID_SOUND_TEXT].value
+                label_text = row[ID_LABEL_TEXT].value.replace(",", "")
+                sound_text = row[ID_SOUND_TEXT].value.replace(",", "")
 
                 if script_texts.get(data_filename):
                     print("***ERROR: duplicate filename found {}".format(data_filename))
@@ -50,6 +50,20 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     print(args)
+
+    # script_labels = []
+    # script_labels.append(("o_0271\o_0271-13011-02-01-KES-F-08-A.wav", "순위에 있는 빌보드 노래 띄워 줘."))
+    # script_labels.append(("o_0271\o_0271-13012-02-01-KES-F-08-A.wav", "내가 선택한 번호로 해서 한 장 줘."))
+    # script_labels.append(("o_0271\o_0271-13004-02-01-KES-F-08-A.wav", "분위기 살려 주는 노래 알려 줘."))
+    # script_labels.append(("o_0271\o_0271-13003-02-01-KES-F-08-A.wav", "지금 사이트 즐겨 찾기에 넣어 줘."))
+    # script_labels.append(("o_0271\o_0271-13010-02-01-KES-F-08-A.wav", "퍼즐 놀이 틀어 줘."))
+    # script_labels.append(("o_0271\o_0271-13005-02-01-KES-F-08-A.wav", "나 혼자 있으니 아무 말이나 해 봐."))
+    # script_labels.append(("o_0271\o_0271-13006-02-01-KES-F-08-A.wav", "내일은 알람 일곱시로 맞춰 줘."))
+    # script_labels.append(("o_0271\o_0271-13008-02-01-KES-F-08-A.wav", "채널 변경해 줄래?"))
+    # script_labels.append(("o_0271\o_0271-13009-02-01-KES-F-08-A.wav", "화질 낮은 거 좀 해결해 줘."))
+    #
+    # script_labels.sort()
+    # print(script_labels)
 
     # path_in = "train_label_tw.txt"
     # path_out_train = "labels_tw_shuffle_train.txt"
@@ -77,7 +91,6 @@ if __name__ == '__main__':
     #         file_out.write("{},{}\n".format(line[0], line[1]))
     # file_out.close()
     # exit(0)
-    labels_xls = "../data/senior_voice_commands/AI-Robot_q_0047_ShinSoonYoung.xlsx"
 
     data_files = glob_files_all(args.path_data)
     print("Found {} data files".format(len(data_files)))
@@ -124,6 +137,7 @@ if __name__ == '__main__':
     print(missing_data_files)
 
     with open(args.path_out, 'w', encoding="utf-8") as file_out:
+        file_out.write("[\"{}\", \"{}\"]\n".format("FileName", "Text"))
         for line in script_labels:
             filepath = line[0]
             filename = Path(os.path.basename(filepath)).stem
