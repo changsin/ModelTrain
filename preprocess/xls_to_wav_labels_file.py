@@ -105,6 +105,17 @@ if __name__ == '__main__':
 
     missing_data_files = []
 
+    lite_folders = ['n_0009',
+                   'o_0003',
+                   'p_0041',
+                   'q_0014',
+                   'r_0014',
+                   's_0022',
+                   'w_0176',
+                   'x_0150',
+                   'y_0150',
+                   'zzmt1581_1']
+
     count_labels = 0
     script_labels = []
     label_sub_folders = glob_folders(args.path_in)
@@ -124,7 +135,8 @@ if __name__ == '__main__':
                     print("***Image file Not found for {} in {}".format(data_filename, xls_filename))
                     missing_data_files.append(data_filename.lower())
 
-                script_labels.append((sub_filename, texts[1]))
+                if sub_folder in lite_folders:
+                    script_labels.append((sub_filename, texts[1]))
     print("Found {} items".format(len(script_labels)))
 
     # for line in script_labels:
@@ -139,7 +151,7 @@ if __name__ == '__main__':
     script_labels.sort()
 
     with open(args.path_out, 'w', encoding="utf-8") as file_out:
-        file_out.write("[\"{}\", \"{}\"]\n".format("FileName", "Text"))
+        # file_out.write("[\"{}\", \"{}\"]\n".format("FileName", "Text"))
         for line in script_labels:
             filepath = line[0]
             filename = Path(os.path.basename(filepath)).stem
