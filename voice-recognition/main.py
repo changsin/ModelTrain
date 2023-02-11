@@ -3,6 +3,7 @@ import gc
 import os
 import pickle
 from glob import glob
+from pathlib import Path
 
 import nsml
 import pandas as pd
@@ -154,15 +155,32 @@ def path_loader(root_path, is_test=False):
         return file_list
 
     if args.mode == 'train':
-        train_path = os.path.join(root_path, 'train')
-        # file_list = sorted(glob_files_all(os.path.join(train_path, 'train_data', '')))
-        file_list = sorted(glob_files_all(os.path.join(train_path, 'train_lite', '')))
+        train_path = root_path
+        # os.path.join(root_path, 'train')
+        file_list = sorted(glob_files_all(os.path.join(train_path, 'train_data', '')))
+        # file_list = sorted(glob_files_all(os.path.join(train_path, 'train_lite', '')))
         print("Data files loaded {}".format(len(file_list)))
         # file_list = sorted(glob(os.path.join(train_path, 'train_data', '*')))
-        label = pd.read_csv(os.path.join(train_path, 'labels_tw_lite.txt'))
+        # label = pd.read_csv(os.path.join(train_path, 'labels_tw_lite.txt'))
+        label = pd.read_csv(os.path.join(train_path, 'train_label.txt'))
         print("Loaded label {}".format(len(label)))
 
-    return file_list, label
+        file_dict = dict()
+        for full_file_path in file_list:
+            filename = Path(os.path.basename(full_file_path)).stem
+            if file_dict.get(filename):
+                print("ERROR: duplicate file name found {}".format(filename))
+            else:
+                file_dict[filename.lower()] = full_file_path
+
+        file_list_selected = []
+        data_file_paths = label.iloc[:, 0]
+        for data_file_path in data_file_paths:
+            data_filename = Path(os.path.basename(data_file_path)).stem
+            data_filename = data_filename.replace("[\"", "")
+            file_list_selected.append(file_dict[data_filename])
+
+    return file_list_selected, label
 
 
 def save_checkpoint(checkpoint, dir):
@@ -261,7 +279,8 @@ if __name__ == '__main__':
         nsml.paused(scope=locals())
 
     if args.mode == 'train':
-        DATASET_PATH = "/home/aidev/data/AI-Hub/SeniorVoiceCommands"
+        # DATASET_PATH = "/home/aidev/data/AI-Hub/SeniorVoiceCommands"
+        DATASET_PATH = "/Users/changsin/PycharmProjects/ModelTrain/data/senior_voice_commands/train"
         file_list, label = path_loader(DATASET_PATH)
 
         split_num = int(len(label) * 0.9)
@@ -293,6 +312,7 @@ if __name__ == '__main__':
         valid_dataloader = DataLoader(valid_dataset,
                                       batch_size=batch_size,
                                       shuffle=False)
+        exit(0)
 
         model = Transformer(
             num_layers=num_layers,
