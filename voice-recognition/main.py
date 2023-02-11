@@ -2,12 +2,12 @@ import argparse
 import gc
 import os
 import pickle
-import wandb
 from glob import glob
 
 import nsml
 import pandas as pd
 import torch
+import wandb
 # from nsml import DATASET_PATH
 from torch import nn
 from torch.utils.data import DataLoader
@@ -155,10 +155,11 @@ def path_loader(root_path, is_test=False):
 
     if args.mode == 'train':
         train_path = os.path.join(root_path, 'train')
-        file_list = sorted(glob_files_all(os.path.join(train_path, 'train_data', '')))
+        # file_list = sorted(glob_files_all(os.path.join(train_path, 'train_data', '')))
+        file_list = sorted(glob_files_all(os.path.join(train_path, 'train_lite', '')))
         print("Data files loaded {}".format(len(file_list)))
         # file_list = sorted(glob(os.path.join(train_path, 'train_data', '*')))
-        label = pd.read_csv(os.path.join(train_path, 'train_label.txt'))
+        label = pd.read_csv(os.path.join(train_path, 'labels_tw_lite.txt'))
         print("Loaded label {}".format(len(label)))
 
     return file_list, label
@@ -260,7 +261,7 @@ if __name__ == '__main__':
         nsml.paused(scope=locals())
 
     if args.mode == 'train':
-        DATASET_PATH = "../data/senior_voice_commands"
+        DATASET_PATH = "/home/aidev/data/AI-Hub/SeniorVoiceCommands"
         file_list, label = path_loader(DATASET_PATH)
 
         split_num = int(len(label) * 0.9)
@@ -280,9 +281,11 @@ if __name__ == '__main__':
         train_dataset = CustomDataset(train_file_list, train_tokens)
         valid_dataset = CustomDataset(val_file_list, val_tokens)
 
-        print("train_tokens: {} val_tokens: {}".format(len(train_tokens), len(val_tokens)))
-        print("train_file_list: {} val_file_list: {}".format(len(train_file_list), len(val_file_list)))
+        print("train_tokens: {} train_file_list: {}".format(len(train_tokens), len(train_file_list)))
+        print("val_tokens: {} val_file_list: {}".format(len(val_tokens), len(val_file_list)))
 
+        print("train_token samples: {} train_file samples: {}".format(train_label.iloc[:, 1][:3], train_file_list[:3]))
+        print("val_token samples: {} val_file samples: {}".format(val_label.iloc[:, 1][:3], val_file_list[:3]))
         train_dataloader = DataLoader(train_dataset,
                                       batch_size=batch_size,
                                       shuffle=True)
@@ -356,4 +359,4 @@ if __name__ == '__main__':
 
             save_checkpoint(checkpoint=dict_for_infer, dir='./checkpoint')
             # DONOTCHANGE (You can decide how often you want to save the model)
-            # nsml.save(epoch)
+            nsml.save(epoch)
