@@ -148,7 +148,9 @@ def glob_files_all(folder, file_type='*'):
     return files
 
 
-def path_loader(root_path, is_test=False):
+def path_loader(root_path, divide_id=8000, use_column=1, is_test=False):
+    print("root_path: {} divide_id: {} use_column: {} is_test: {}".format(root_path, divide_id, use_column, is_test))
+
     if is_test:
         file_list = sorted(glob(os.path.join(root_path, 'test_data', '*')))
 
@@ -162,25 +164,35 @@ def path_loader(root_path, is_test=False):
         print("Data files loaded {}".format(len(file_list)))
         # file_list = sorted(glob(os.path.join(train_path, 'train_data', '*')))
         # label = pd.read_csv(os.path.join(train_path, 'labels_tw_lite.txt'))
-        label = pd.read_csv(os.path.join(train_path, 'train_label.txt'))
+        # label = pd.read_csv(os.path.join(train_path, 'train_label.txt'))
+        label = pd.read_csv(os.path.join(train_path, 'labels_ai-hub_tw_shuffle.txt'))
         print("Loaded label {}".format(len(label)))
 
         file_dict = dict()
         for full_file_path in file_list:
             filename = Path(os.path.basename(full_file_path)).stem
-            if file_dict.get(filename):
+            if file_dict.get(filename.lower()):
                 print("ERROR: duplicate file name found {}".format(filename))
             else:
                 file_dict[filename.lower()] = full_file_path
+
+        print("file_dict {}".format(len(file_dict)))
+        for id, (key, val) in enumerate(file_dict.items()):
+            print("{} {}".format(key, val))
+            if id > 3:
+                break
 
         file_list_selected = []
         data_file_paths = label.iloc[:, 0]
         for data_file_path in data_file_paths:
             data_filename = Path(os.path.basename(data_file_path)).stem
             data_filename = data_filename.replace("[\"", "")
-            file_list_selected.append(file_dict[data_filename])
+            if file_dict.get(data_filename.lower()):
+                file_list_selected.append(file_dict[data_filename.lower()])
+            else:
+                print("ERROR: file not found {}".format(data_filename))
 
-    return file_list_selected, label
+    return file_list_selected[:divide_id], label[:divide_id]
 
 
 def save_checkpoint(checkpoint, dir):
@@ -247,6 +259,8 @@ if __name__ == '__main__':
     parser.add_argument('--iteration', type=str, default='0')
     parser.add_argument('--pause', type=int, default=0)
     parser.add_argument("--path_in", action="store", dest="path_in", type=str)
+    parser.add_argument("--divide_id", action="store", dest="divide_id", type=int, default=8000)
+    parser.add_argument("--use_column", action="store", dest="use_column", type=int, default=1)
     args = parser.parse_args()
 
     # label = pd.read_csv("/Users/changsin/PycharmProjects/ModelTrain/data/senior_voice_commands/train_label.txt")
@@ -279,9 +293,11 @@ if __name__ == '__main__':
         nsml.paused(scope=locals())
 
     if args.mode == 'train':
-        # DATASET_PATH = "/home/aidev/data/AI-Hub/SeniorVoiceCommands"
-        DATASET_PATH = "/Users/changsin/PycharmProjects/ModelTrain/data/senior_voice_commands/train"
-        file_list, label = path_loader(DATASET_PATH)
+        DATASET_PATH = "/home/aidev/data/AI-Hub/SeniorVoiceCommands/train"
+        # DATASET_PATH = "/Users/changsin/PycharmProjects/ModelTrain/data/senior_voice_commands/train"
+        file_list, label = path_loader(DATASET_PATH, args.divide_id, args.use_column)
+
+        print("Loaded files {} labels {}".format(len(file_list), len(label)))
 
         split_num = int(len(label) * 0.9)
         train_file_list = file_list[:split_num]
@@ -312,7 +328,7 @@ if __name__ == '__main__':
         valid_dataloader = DataLoader(valid_dataset,
                                       batch_size=batch_size,
                                       shuffle=False)
-        exit(0)
+        # exit(0)
 
         model = Transformer(
             num_layers=num_layers,
