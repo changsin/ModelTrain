@@ -109,12 +109,12 @@ if __name__ == '__main__':
                    'o_0003',
                    'p_0041',
                    'q_0014',
-                   'r_0014',
-                   's_0022',
-                   'w_0176',
-                   'x_0150',
-                   'y_0150',
-                   'zzmt1581_1']
+                   'r_0014',]
+                   # 's_0022',]
+                   # 'w_0176',
+                   # 'x_0150',
+                   # 'y_0150',
+                   # 'zzmt1581_1']
 
     count_labels = 0
     script_labels = []
@@ -136,7 +136,7 @@ if __name__ == '__main__':
                     missing_data_files.append(data_filename.lower())
 
                 if sub_folder in lite_folders:
-                    script_labels.append((sub_filename, texts[1]))
+                    script_labels.append((sub_filename, texts[0]))
     print("Found {} items".format(len(script_labels)))
 
     # for line in script_labels:
