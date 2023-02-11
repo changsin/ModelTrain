@@ -104,17 +104,17 @@ if __name__ == '__main__':
             data_files_dict[filename.lower()] = filepath
 
     missing_data_files = []
-
-    lite_folders = ['n_0009',
-                   'o_0003',
-                   'p_0041',
-                   'q_0014',
-                   'r_0014',]
-                   # 's_0022',]
-                   # 'w_0176',
-                   # 'x_0150',
-                   # 'y_0150',
-                   # 'zzmt1581_1']
+    #
+    # lite_folders = ['n_0009',
+    #                'o_0003',
+    #                'p_0041',
+    #                'q_0014',
+    #                'r_0014',]
+    #                # 's_0022',]
+    #                # 'w_0176',
+    #                # 'x_0150',
+    #                # 'y_0150',
+    #                # 'zzmt1581_1']
 
     count_labels = 0
     script_labels = []
@@ -135,8 +135,8 @@ if __name__ == '__main__':
                     print("***Image file Not found for {} in {}".format(data_filename, xls_filename))
                     missing_data_files.append(data_filename.lower())
 
-                if sub_folder in lite_folders:
-                    script_labels.append((sub_filename, texts[0]))
+                # if sub_folder in lite_folders:
+                script_labels.append((sub_filename, texts[0], texts[1]))
     print("Found {} items".format(len(script_labels)))
 
     # for line in script_labels:
@@ -148,10 +148,11 @@ if __name__ == '__main__':
     print("Found {} missing data files".format(len(missing_data_files)))
     print(missing_data_files)
 
-    script_labels.sort()
+    random.shuffle(script_labels)
 
     with open(args.path_out, 'w', encoding="utf-8") as file_out:
         # file_out.write("[\"{}\", \"{}\"]\n".format("FileName", "Text"))
+        file_out.write("{},{},{}\n".format("FileName", "LabelText", "SoundText"))
         for line in script_labels:
             filepath = line[0]
             filename = Path(os.path.basename(filepath)).stem
@@ -159,7 +160,8 @@ if __name__ == '__main__':
                 print("***Not adding missing data file {}".format(filename))
                 continue
 
-            file_out.write("[\"{}.wav\", \"{}\"]\n".format(filepath, line[1]))
+            # file_out.write("[\"{}.wav\", \"{}\"]\n".format(filepath, line[1]))
+            file_out.write("{},{},{}\n".format(filepath, line[1], line[2]))
         # for filename, texts in script_texts.items():
         #     file_out.write("[\"{}.wav\", \"{}\"]\n".format(filename, texts[0]))
     file_out.close()
