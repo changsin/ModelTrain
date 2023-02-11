@@ -99,7 +99,7 @@ if __name__ == '__main__':
     for filepath in data_files:
         filename = Path(os.path.basename(filepath)).stem
         if data_files_dict.get(filename.lower()):
-            print("***Dupe filename found {}".format(filename))
+            print("***Dupe data file found {} {}".format(filename, filepath))
         else:
             data_files_dict[filename.lower()] = filepath
 
@@ -136,15 +136,19 @@ if __name__ == '__main__':
     print("Found {} missing data files".format(len(missing_data_files)))
     print(missing_data_files)
 
+    script_labels.sort()
+
     with open(args.path_out, 'w', encoding="utf-8") as file_out:
         file_out.write("[\"{}\", \"{}\"]\n".format("FileName", "Text"))
         for line in script_labels:
             filepath = line[0]
             filename = Path(os.path.basename(filepath)).stem
-            if filename.lower in missing_data_files:
+            if filename.lower() in missing_data_files or filename == "zzpw4041_1-209520-02-99-LGS-F-08-A":
                 print("***Not adding missing data file {}".format(filename))
+                continue
 
-            file_out.write("[\"{}.wav\", \"{}\"]\n".format(filename, line[1]))
+            file_out.write("[\"{}.wav\", \"{}\"]\n".format(filepath, line[1]))
         # for filename, texts in script_texts.items():
         #     file_out.write("[\"{}.wav\", \"{}\"]\n".format(filename, texts[0]))
     file_out.close()
+    print("Wrote to {}".format(args.path_out))
