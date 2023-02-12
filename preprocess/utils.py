@@ -28,28 +28,28 @@ def glob_files(folder, file_type='*'):
 
 def glob_folders(folder, file_type='*'):
     search_string = os.path.join(folder, file_type)
-    files = glob.glob(search_string)
+    paths = glob.glob(search_string)
 
     print('Searching ', search_string)
-    paths = []
-    for f in files:
-      if os.path.isdir(f):
-        paths.append(f)
+    folders_found = []
+    for p in paths:
+        if os.path.isdir(p):
+            folders_found.append(p)
 
-    # We sort the images in alphabetical order to match them
-    #  to the annotation files
-    paths.sort()
+    folders_found.sort()
 
-    return paths
+    return folders_found
 
 
 def glob_files_all(folder, file_type='*'):
-    print("Searching {}".format(folder))
-    sub_folders = glob_folders(folder)
-    print("Found {} sub folders".format(len(sub_folders)))
-
     files = []
-    for sub_folder in sub_folders:
+
+    print("Searching {}".format(folder))
+    folders_found = glob_folders(folder)
+    print("Found {} sub folders".format(len(folders_found)))
+    files = glob_files(folder)
+
+    for sub_folder in folders_found:
         tmp_files = glob_files(sub_folder, file_type)
         files.extend(tmp_files)
     print("Found {} files".format(len(files)))

@@ -1,0 +1,75 @@
+{
+  "info": {
+    "description": "[2022_NIA_AIHub]수도권 도로장애물 표면 인지 영상2",
+    "url": "",
+    "version": "1.0",
+    "year": 2021,
+    "contributor": "Konkuk_university",
+    "date_created": "2021/02/07"
+  },
+  "images": {
+    "file_name": "V1F_HY_5466_20210207_075752_N_CH2_Seoul_Fog_Frontback_Day_20679.png",
+    "width": 1280,
+    "height": 720,
+    "id": 1
+  },
+  "annotations": [
+    {
+      "segmentation": [],
+      "polyline": [],
+      "image_id": 1,
+      "bbox": [
+        542.4,
+        72.15,
+        58.10000000000002,
+        101.85
+      ],
+      "category_id": 5,
+      "area": 5917.485000000002,
+      "is_crowd": 0,
+      "id": 1
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Animals(Dolls)"
+    },
+    {
+      "id": 2,
+      "name": "Person"
+    },
+    {
+      "id": 3,
+      "name": "Garbage bag & sacks"
+    },
+    {
+      "id": 4,
+      "name": "Construction signs & Parking prohibited board"
+    },
+    {
+      "id": 5,
+      "name": "Traffic cone"
+    },
+    {
+      "id": 6,
+      "name": "Box"
+    },
+    {
+      "id": 7,
+      "name": "Stones on road"
+    },
+    {
+      "id": 8,
+      "name": "Pothole on road"
+    },
+    {
+      "id": 9,
+      "name": "Filled pothole"
+    },
+    {
+      "id": 10,
+      "name": "Manhole"
+    }
+  ]
+}
