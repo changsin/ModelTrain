@@ -398,6 +398,67 @@ class CoCoConverter(Converter):
             utils.to_file(out_path, json.dumps(json_labels, ensure_ascii=False))
 
 
+class PascalVOCConverter(Converter):
+    def convert(self, parser, filename_in, path_out):
+        parsed = parser.parse(filename_in)
+
+        # Use the input xml as the template
+        tree_out = ET.parse(filename_in)
+        el_root = tree_out.getroot()
+
+        # first remove all child elements
+        for child in el_root.getchildren():
+            el_root.remove(child)
+
+        for image in parsed:
+            filename_image = image[0]
+            width = image[1]
+            height = image[2]
+            el_filename = ET.SubElement(el_root, 'filename')
+            el_filename.text = filename_image
+
+            el_size = ET.SubElement(el_root, 'size')
+            el_width = ET.SubElement(el_size, 'width')
+            el_width.text = str(width)
+            el_height = ET.SubElement(el_size, 'height')
+            el_height.text = str(height)
+            # Hard coding it just like AI-Hub data
+            el_depth = ET.SubElement(el_size, 'depth')
+            el_width.text = "3"
+
+            # Hard coding it just like AI-Hub data
+            el_segmented = ET.SubElement(el_root, 'segmented')
+            el_segmented.text = "0"
+
+            boxes = image[5]
+            for box in boxes:
+                el_object = ET.SubElement(el_root, 'object')
+                el_name = ET.SubElement(el_object, 'name')
+                el_name.text = box[0]
+
+                el_bndbox = ET.SubElement(el_object, 'bndbox')
+                el_xmin = ET.SubElement(el_bndbox, 'xmin')
+                el_xmin.text = str(float(box[1]))
+                el_ymin = ET.SubElement(el_bndbox, 'ymin')
+                el_ymin.text = str(float(box[2]))
+                el_xmax = ET.SubElement(el_bndbox, 'xmax')
+                el_xmax.text = str(float(box[3]))
+                el_ymax = ET.SubElement(el_bndbox, 'ymax')
+                el_ymax.text = str(float(box[4]))
+
+                # TODO: These are hard-coded for this dataset
+                el_pose = ET.SubElement(el_bndbox, 'pose')
+                el_pose.text = 'Unspecified'
+                el_truncated = ET.SubElement(el_bndbox, 'truncated')
+                el_truncated.text = "0"
+                el_difficult = ET.SubElement(el_bndbox, 'difficult')
+                el_difficult.text = "0"
+
+            filename_out = os.path.join(path_out, Path(os.path.basename(el_filename.text)).stem + ".xml")
+            with open(filename_out, "wb") as xml:
+                xml.write(ET.tostring(tree_out, pretty_print=True))
+
+
 def default(obj):
     if hasattr(obj, 'to_json'):
         return obj.to_json()

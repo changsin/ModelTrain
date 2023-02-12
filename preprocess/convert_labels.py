@@ -3,7 +3,7 @@ import os
 import shutil
 
 from constants import Mode, LabelFormat
-from converter import YoloV5Converter, EdgeImpulseConverter, CVATXmlConverter, CoCoConverter
+from converter import YoloV5Converter, EdgeImpulseConverter, CVATXmlConverter, CoCoConverter, PascalVOCConverter
 from parser import CoCoJsonParser, CVATXmlParser, PascalVOCParser
 from utils import glob_files, glob_folders, glob_files_all, split_train_val_test_files, copy_label_files, flat_copy,\
     calculate_overlapped_area
@@ -36,6 +36,8 @@ def convert_labels(path_in, path_out, from_format, to_format=LabelFormat.EDGE_IM
         convertor = CVATXmlConverter()
     elif to_format == LabelFormat.COCO_JSON:
         convertor = CoCoConverter()
+    elif to_format == LabelFormat.PASCAL_VOC:
+        convertor = PascalVOCConverter()
     else:
         print('Unsupported output format {}'.format(to_format))
 
