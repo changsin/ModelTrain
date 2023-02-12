@@ -359,6 +359,9 @@ if __name__ == '__main__':
                 batch_loss, batch_acc, lr = train_step(batch, training)
                 total_train_loss += batch_loss
                 total_train_acc += batch_acc
+                wandb.log({
+                    "train_batch_acc": batch_acc,
+                    "train_batch_loss": batch_loss})
 
             training = False
             for batch in valid_dataloader:
@@ -366,6 +369,9 @@ if __name__ == '__main__':
                 batch_loss, batch_acc = train_step(batch, training)
                 total_valid_loss += batch_loss
                 total_valid_acc += batch_acc
+                wandb.log({
+                    "batch_batch_acc": batch_acc,
+                    "batch_batch_loss": batch_loss})
 
             print('=================Epoch: {}'.format(epoch))
             print(f'total_train_loss: {total_train_loss}')
