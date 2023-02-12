@@ -370,8 +370,8 @@ if __name__ == '__main__':
                 total_valid_loss += batch_loss
                 total_valid_acc += batch_acc
                 wandb.log({
-                    "batch_batch_acc": batch_acc,
-                    "batch_batch_loss": batch_loss})
+                    "valid_batch_acc": batch_acc,
+                    "valid_batch_loss": batch_loss})
 
             print('=================Epoch: {}'.format(epoch))
             print(f'total_train_loss: {total_train_loss}')
