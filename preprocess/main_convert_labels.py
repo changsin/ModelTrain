@@ -1,13 +1,11 @@
 import argparse
-import os
-import shutil
+from collections import namedtuple
 
 from constants import Mode, LabelFormat
-from converter import YoloV5Converter, EdgeImpulseConverter, CVATXmlConverter, CoCoConverter, PascalVOCConverter
-from parser import CoCoJsonParser, CVATXmlParser, PascalVOCParser
-from utils import glob_files, glob_folders, glob_files_all, split_train_val_test_files, copy_label_files, flat_copy,\
-    calculate_overlapped_area
-from collections import namedtuple
+from readers import CoCoJsonReader, CVATXmlReader, PascalVOCReader
+from utils import *
+from writers import YoloV5Writer, EdgeImpulseWriter, CVATXmlWriter, CoCoWriter, PascalVOCWriter
+
 Rectangle = namedtuple('Rectangle', 'xmin ymin xmax ymax')
 
 """
@@ -20,24 +18,24 @@ def convert_labels(path_in, path_out, from_format, to_format=LabelFormat.EDGE_IM
     convertor = None
 
     if from_format == LabelFormat.CVAT_XML:
-        parser = CVATXmlParser()
+        parser = CVATXmlReader()
     elif from_format == LabelFormat.PASCAL_VOC:
-        parser = PascalVOCParser()
+        parser = PascalVOCReader()
     elif from_format == LabelFormat.COCO_JSON:
-        parser = CoCoJsonParser()
+        parser = CoCoJsonReader()
     else:
         print('Unsupported input format {}'.format(from_format))
 
     if to_format == LabelFormat.EDGE_IMPULSE:
-        convertor = EdgeImpulseConverter()
+        convertor = EdgeImpulseWriter()
     elif to_format == LabelFormat.YOLOV5:
-        convertor = YoloV5Converter()
+        convertor = YoloV5Writer()
     elif to_format == LabelFormat.CVAT_XML:
-        convertor = CVATXmlConverter()
+        convertor = CVATXmlWriter()
     elif to_format == LabelFormat.COCO_JSON:
-        convertor = CoCoConverter()
+        convertor = CoCoWriter()
     elif to_format == LabelFormat.PASCAL_VOC:
-        convertor = PascalVOCConverter()
+        convertor = PascalVOCWriter()
     else:
         print('Unsupported output format {}'.format(to_format))
 
@@ -48,7 +46,7 @@ def check_overlaps(path_in, path_out, from_format):
     parser = None
 
     if from_format == LabelFormat.CVAT_XML:
-        parser = CVATXmlParser()
+        parser = CVATXmlReader()
     else:
         print('Unsupported input format {}'.format(from_format))
 
@@ -88,7 +86,7 @@ def check_overlaps(path_in, path_out, from_format):
 
 
 def convert_xmls(path_in, path_out):
-    parser = CVATXmlParser()
+    parser = CVATXmlReader()
 
     parser.convert_xml(path_in, path_out)
 

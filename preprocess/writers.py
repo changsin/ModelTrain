@@ -72,13 +72,13 @@ class EdgeImpulseLabels:
         return to_return
 
 
-class Converter(ABC):
+class Writer(ABC):
     @abstractmethod
     def convert(self, parser, path_in, path_out):
         pass
 
 
-class YoloV5Converter(Converter):
+class YoloV5Writer(Writer):
     def convert(self, parser, path_in, path_out):
         """
         # change to yolo v5 format
@@ -132,7 +132,7 @@ class YoloV5Converter(Converter):
         [print("\"{}\",".format(label)) for label in parser.labels]
 
 
-class EdgeImpulseConverter(Converter):
+class EdgeImpulseWriter(Writer):
     def convert(self, parser, path_in, path_out):
         parsed = parser.parse(path_in)
 
@@ -154,7 +154,7 @@ class EdgeImpulseConverter(Converter):
             image_labels[image_filename] = labels
 
 
-class CVATXmlConverter(Converter):
+class CVATXmlWriter(Writer):
     def convert(self, parser, path_in, path_out):
         parsed = parser.parse(path_in)
 
@@ -301,7 +301,7 @@ class CVATXmlConverter(Converter):
             xml.write(ET.tostring(tree_out, pretty_print=True))
 
 
-class CoCoConverter(Converter):
+class CoCoWriter(Writer):
     def __init__(self):
         self.categories = [
             # TODO: hard-coding it for this dataset
@@ -350,7 +350,7 @@ class CoCoConverter(Converter):
             info["description"] = img[3]
             info["url"] = ""
             info["version"] = "1.0"
-            year, month, day = CoCoConverter._parse_date_from_file_name(img[0])
+            year, month, day = CoCoWriter._parse_date_from_file_name(img[0])
             info["year"] = int(year)
             info["contributor"] = "Konkuk_university"  # hard-code it for this dataset
             info["date_created"] = "{}/{}/{}".format(year, month, day)
@@ -398,7 +398,7 @@ class CoCoConverter(Converter):
             utils.to_file(out_path, json.dumps(json_labels, ensure_ascii=False))
 
 
-class PascalVOCConverter(Converter):
+class PascalVOCWriter(Writer):
     def convert(self, parser, filename_in, path_out):
         parsed = parser.parse(filename_in)
 

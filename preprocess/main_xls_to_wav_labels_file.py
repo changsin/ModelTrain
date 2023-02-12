@@ -51,47 +51,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(args)
 
-    # script_labels = []
-    # script_labels.append(("o_0271\o_0271-13011-02-01-KES-F-08-A.wav", "순위에 있는 빌보드 노래 띄워 줘."))
-    # script_labels.append(("o_0271\o_0271-13012-02-01-KES-F-08-A.wav", "내가 선택한 번호로 해서 한 장 줘."))
-    # script_labels.append(("o_0271\o_0271-13004-02-01-KES-F-08-A.wav", "분위기 살려 주는 노래 알려 줘."))
-    # script_labels.append(("o_0271\o_0271-13003-02-01-KES-F-08-A.wav", "지금 사이트 즐겨 찾기에 넣어 줘."))
-    # script_labels.append(("o_0271\o_0271-13010-02-01-KES-F-08-A.wav", "퍼즐 놀이 틀어 줘."))
-    # script_labels.append(("o_0271\o_0271-13005-02-01-KES-F-08-A.wav", "나 혼자 있으니 아무 말이나 해 봐."))
-    # script_labels.append(("o_0271\o_0271-13006-02-01-KES-F-08-A.wav", "내일은 알람 일곱시로 맞춰 줘."))
-    # script_labels.append(("o_0271\o_0271-13008-02-01-KES-F-08-A.wav", "채널 변경해 줄래?"))
-    # script_labels.append(("o_0271\o_0271-13009-02-01-KES-F-08-A.wav", "화질 낮은 거 좀 해결해 줘."))
-    #
-    # script_labels.sort()
-    # print(script_labels)
-
-    # path_in = "train_label_tw.txt"
-    # path_out_train = "labels_tw_shuffle_train.txt"
-    # path_out_test = "labels_tw_shuffle_test.txt"
-    #
-    # # csv_file = open(path_in,  'r', encoding="utf-8")
-    #
-    # script_labels = []
-    # with open(path_in, encoding="utf-8") as csvfile:
-    #     datareader = csv.reader(csvfile, delimiter=',', quotechar='\"')
-    #     for row in datareader:
-    #         script_labels.append((row[0], row[1]))
-    #
-    # random.shuffle(script_labels)
-    #
-    # id_train = int(len(script_labels) / 10)
-    #
-    # with open(path_out_train, 'w', encoding="utf-8") as file_out:
-    #     for line in script_labels[id_train:]:
-    #         file_out.write("{},{}\n".format(line[0], line[1]))
-    # file_out.close()
-    #
-    # with open(path_out_test, 'w', encoding="utf-8") as file_out:
-    #     for line in script_labels[:id_train]:
-    #         file_out.write("{},{}\n".format(line[0], line[1]))
-    # file_out.close()
-    # exit(0)
-
     data_files = glob_files_all(args.path_data)
     print("Found {} data files".format(len(data_files)))
 
@@ -104,17 +63,6 @@ if __name__ == '__main__':
             data_files_dict[filename.lower()] = filepath
 
     missing_data_files = []
-    #
-    # lite_folders = ['n_0009',
-    #                'o_0003',
-    #                'p_0041',
-    #                'q_0014',
-    #                'r_0014',]
-    #                # 's_0022',]
-    #                # 'w_0176',
-    #                # 'x_0150',
-    #                # 'y_0150',
-    #                # 'zzmt1581_1']
 
     count_labels = 0
     script_labels = []

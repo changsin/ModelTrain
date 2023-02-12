@@ -11,7 +11,7 @@ from collections import namedtuple
 Rectangle = namedtuple('Rectangle', 'xmin ymin xmax ymax')
 
 
-class Parser(ABC):
+class Reader(ABC):
     def __init__(self):
         self.labels = []
 
@@ -20,7 +20,7 @@ class Parser(ABC):
         pass
 
 
-class PascalVOCParser(Parser):
+class PascalVOCReader(Reader):
     def parse(self, folder, file_type='*'):
         def _parse_file(filename):
             width, height = 0, 0
@@ -72,7 +72,7 @@ def check_dupes(boxes, threshold=0.9):
     return idx_to_remove
 
 
-class CVATXmlParser(Parser):
+class CVATXmlReader(Reader):
     def convert_xml(self, path_in, path_out):
         tree_out = ET.parse(path_in)
         # print("Labels are: ")
@@ -198,7 +198,7 @@ class CVATXmlParser(Parser):
         return np.array(image_labels, dtype=object)
 
 
-class CoCoJsonParser(Parser):
+class CoCoJsonReader(Reader):
     def parse(self, filename, file_type='*'):
         data = src.utils.from_file(filename)
 
