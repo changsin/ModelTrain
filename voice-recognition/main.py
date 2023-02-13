@@ -373,6 +373,9 @@ if __name__ == '__main__':
                 "avg_train_batch_acc": avg_batch_acc / float(iterations),
                 "avg_train_batch_loss": avg_batch_loss / float(iterations)})
 
+            print(f'avg_train_batch_acc: {avg_batch_acc / float(iterations)}')
+            print(f'avg_train_batch_loss: {avg_batch_acc / float(iterations)}')
+
             training = False
             iterations = 0
             avg_batch_loss, avg_batch_acc = 0, 0
@@ -392,6 +395,8 @@ if __name__ == '__main__':
             wandb.log({
                 "avg_valid_batch_acc": avg_batch_acc/float(iterations),
                 "avg_valid_batch_loss": avg_batch_loss/float(iterations)})
+            print(f'avg_valid_batch_acc: {avg_batch_acc / float(iterations)}')
+            print(f'avg_valid_batch_loss: {avg_batch_acc / float(iterations)}')
 
             print('=================Epoch: {} Iterations: {}'.format(epoch, iterations))
             print(f'total_train_loss: {total_train_loss}')
