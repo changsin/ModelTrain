@@ -354,6 +354,8 @@ if __name__ == '__main__':
             total_train_acc, total_valid_acc = 0, 0
 
             training = True
+            avg_batch_loss, avg_batch_acc = 0, 0
+            iterations = 0
             for batch in train_dataloader:
                 batch = batch
                 batch_loss, batch_acc, lr = train_step(batch, training)
@@ -361,9 +363,19 @@ if __name__ == '__main__':
                 total_train_acc += batch_acc
                 wandb.log({
                     "train_batch_acc": batch_acc,
-                    "train_batch_loss": batch_loss})
+                    "train_batch_loss":batch_loss})
+
+                avg_batch_loss += batch_loss
+                avg_batch_acc += batch_acc
+                iterations += 1
+
+            wandb.log({
+                "avg_train_batch_acc": avg_batch_acc / float(iterations),
+                "avg_train_batch_loss": avg_batch_loss / float(iterations)})
 
             training = False
+            iterations = 0
+            avg_batch_loss, avg_batch_acc = 0, 0
             for batch in valid_dataloader:
                 batch = batch
                 batch_loss, batch_acc = train_step(batch, training)
@@ -373,7 +385,15 @@ if __name__ == '__main__':
                     "valid_batch_acc": batch_acc,
                     "valid_batch_loss": batch_loss})
 
-            print('=================Epoch: {}'.format(epoch))
+                avg_batch_loss += batch_loss
+                avg_batch_acc += batch_acc
+                iterations += 1
+
+            wandb.log({
+                "avg_valid_batch_acc": avg_batch_acc/float(iterations),
+                "avg_valid_batch_loss": avg_batch_loss/float(iterations)})
+
+            print('=================Epoch: {} Iterations: {}'.format(epoch, iterations))
             print(f'total_train_loss: {total_train_loss}')
             print(f'total_valid_loss: {total_valid_loss}')
             print(f'total_train_acc : {total_train_acc}')
