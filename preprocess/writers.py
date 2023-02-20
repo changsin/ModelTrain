@@ -352,7 +352,7 @@ class CoCoWriter(Writer):
             info["version"] = "1.0"
             year, month, day = CoCoWriter._parse_date_from_file_name(img[0])
             info["year"] = int(year)
-            info["contributor"] = "Konkuk_university"  # hard-code it for this dataset
+            info["contributor"] = "Testworks"  # hard-code it for this dataset
             info["date_created"] = "{}/{}/{}".format(year, month, day)
             json_labels["info"] = info
 
@@ -391,11 +391,19 @@ class CoCoWriter(Writer):
             json_labels["categories"] = self.categories
 
             # out_path = os.path.join(Path(path_in).parent, Path(img[0]).stem + ".json")
-            out_path = os.path.join(path_out, Path(img[0]).stem + ".json")
-            print("Writing to {}".format(out_path))
+            # create sub-folder to save the json files
+            matched = re.search('-[0-9]*$', Path(path_in).stem, re.IGNORECASE).group(0)
+            sub_folder_to = matched.replace("-", "")
+            sub_folder_to = os.path.join(path_out, sub_folder_to)
+            if not os.path.exists(sub_folder_to):
+                print("Creating folder to ", sub_folder_to)
+                os.mkdir(sub_folder_to)
+
+            filename_out = os.path.join(sub_folder_to, Path(img[0]).stem + ".json")
+            print("Writing to {}".format(filename_out))
 
             # Set ensure_ascii=False to write hangul and other unicode chars correctly
-            utils.to_file(out_path, json.dumps(json_labels, ensure_ascii=False))
+            utils.to_file(filename_out, json.dumps(json_labels, ensure_ascii=False))
 
 
 class PascalVOCWriter(Writer):
