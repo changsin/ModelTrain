@@ -390,11 +390,17 @@ class CoCoWriter(Writer):
 
             json_labels["categories"] = self.categories
 
+            # TODO: this is a special requirement for [수도권 도로 영상]
+            #  (https://aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=realm&dataSetSn=61)
             # out_path = os.path.join(Path(path_in).parent, Path(img[0]).stem + ".json")
             # create sub-folder to save the json files
-            matched = re.search('-[0-9]*$', Path(path_in).stem, re.IGNORECASE).group(0)
-            sub_folder_to = matched.replace("-", "")
-            sub_folder_to = os.path.join(path_out, sub_folder_to)
+            filename_in = Path(path_in).stem
+            tokens = filename_in.split("-")
+            sub_folder_parent = os.path.join(path_out, tokens[0])
+            if not os.path.exists(sub_folder_parent):
+                print("Creating folder to ", sub_folder_parent)
+                os.mkdir(sub_folder_parent)
+            sub_folder_to = os.path.join(sub_folder_parent, tokens[1])
             if not os.path.exists(sub_folder_to):
                 print("Creating folder to ", sub_folder_to)
                 os.mkdir(sub_folder_to)
