@@ -352,7 +352,7 @@ class CoCoWriter(Writer):
             info["version"] = "1.0"
             year, month, day = CoCoWriter._parse_date_from_file_name(img[0])
             info["year"] = int(year)
-            info["contributor"] = "Konkuk_university"  # hard-code it for this dataset
+            info["contributor"] = "Testworks"  # hard-code it for this dataset
             info["date_created"] = "{}/{}/{}".format(year, month, day)
             json_labels["info"] = info
 
@@ -390,12 +390,26 @@ class CoCoWriter(Writer):
 
             json_labels["categories"] = self.categories
 
+            # TODO: this is a special requirement for [수도권 도로 영상]
+            #  (https://aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=realm&dataSetSn=61)
             # out_path = os.path.join(Path(path_in).parent, Path(img[0]).stem + ".json")
-            out_path = os.path.join(path_out, Path(img[0]).stem + ".json")
-            print("Writing to {}".format(out_path))
+            # create sub-folder to save the json files
+            filename_in = Path(path_in).stem
+            tokens = filename_in.split("-")
+            sub_folder_parent = os.path.join(path_out, tokens[0])
+            if not os.path.exists(sub_folder_parent):
+                print("Creating folder to ", sub_folder_parent)
+                os.mkdir(sub_folder_parent)
+            sub_folder_to = os.path.join(sub_folder_parent, tokens[1])
+            if not os.path.exists(sub_folder_to):
+                print("Creating folder to ", sub_folder_to)
+                os.mkdir(sub_folder_to)
+
+            filename_out = os.path.join(sub_folder_to, Path(img[0]).stem + ".json")
+            print("Writing to {}".format(filename_out))
 
             # Set ensure_ascii=False to write hangul and other unicode chars correctly
-            utils.to_file(out_path, json.dumps(json_labels, ensure_ascii=False))
+            utils.to_file(filename_out, json.dumps(json_labels, ensure_ascii=False))
 
 
 class PascalVOCWriter(Writer):

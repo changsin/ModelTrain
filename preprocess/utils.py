@@ -41,13 +41,15 @@ def glob_folders(folder, file_type='*'):
     return folders_found
 
 
-def glob_files_all(folder, file_type='*'):
-    files = []
+def glob_files_all(path, file_type='*'):
+    if not os.path.isdir(path):
+        return [path]
 
-    print("Searching {}".format(folder))
-    folders_found = glob_folders(folder)
+    files = []
+    print("Searching {}".format(path))
+    folders_found = glob_folders(path)
     print("Found {} sub folders".format(len(folders_found)))
-    files = glob_files(folder)
+    files = glob_files(path)
 
     for sub_folder in folders_found:
         tmp_files = glob_files(sub_folder, file_type)

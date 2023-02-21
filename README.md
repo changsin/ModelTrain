@@ -15,7 +15,7 @@ source venv/bin/activate
 1. Install the dependencies from venv
 
 ```commandline
-pip install -qr requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Train
@@ -42,7 +42,7 @@ python3 main.py --epochs 20 --divide 40000 --use_column 1 ; python3 main.py --ep
 예: [수도권 도로 영상](https://aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=realm&dataSetSn=61)
 
 ```commandline
-python main_convert_lables.py --mode convert --format_in cvat_xml --format_out coco_json --path_in [folder containing cvat xmls] --path_out [output folder]
+python main_convert_labels.py --mode convert --format_in cvat_xml --format_out coco_json --path_in [folder containing cvat xmls] --path_out [output folder]
 ```
 
 
@@ -50,5 +50,5 @@ python main_convert_lables.py --mode convert --format_in cvat_xml --format_out c
 예: [어린이 구역 위험 영상](https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=realm&dataSetSn=169)
 
 ```commandline
-python main_convert_lables.py --mode convert --format_in cvat_xml --format_out pascal_voc --path_in [folder containing cvat xmls] --path_out [output folder]
+python main_convert_labels.py --mode convert --format_in cvat_xml --format_out pascal_voc --path_in [folder containing cvat xmls] --path_out [output folder]
 ```
