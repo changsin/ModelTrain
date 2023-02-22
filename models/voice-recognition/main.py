@@ -164,8 +164,8 @@ def path_loader(root_path, divide_id=8000, use_column=1, is_test=False):
         print("Data files loaded {}".format(len(file_list)))
         # file_list = sorted(glob(os.path.join(train_path, 'train_data', '*')))
         # label = pd.read_csv(os.path.join(train_path, 'labels_tw_lite.txt'))
-        # label = pd.read_csv(os.path.join(train_path, 'train_label.txt'))
-        label = pd.read_csv(os.path.join(train_path, 'labels_ai-hub_tw_shuffle.txt'))
+        label = pd.read_csv(os.path.join(train_path, 'train_label.txt'))
+        # label = pd.read_csv(os.path.join(train_path, 'labels_ai-hub_tw_shuffle.txt'))
         print("Loaded label {}".format(len(label)))
 
         file_dict = dict()
@@ -255,27 +255,13 @@ def bind_model(model, parser):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='nia_test')
     parser.add_argument('--mode', type=str, default='train')
-    parser.add_argument('--epochs', type=int, default=1)
-    parser.add_argument('--iteration', type=str, default='0')
+    parser.add_argument('--epochs', type=int, default=5)
+    parser.add_argument('--iteration', type=str, default='5')
     parser.add_argument('--pause', type=int, default=0)
     parser.add_argument("--path_in", action="store", dest="path_in", type=str)
-    parser.add_argument("--divide_id", action="store", dest="divide_id", type=int, default=8000)
+    parser.add_argument("--divide_id", action="store", dest="divide_id", type=int, default=50)
     parser.add_argument("--use_column", action="store", dest="use_column", type=int, default=1)
     args = parser.parse_args()
-
-    # label = pd.read_csv("/Users/changsin/PycharmProjects/ModelTrain/data/senior_voice_commands/train_label.txt")
-    # train_label = label.iloc[:10]
-    # val_label = label.iloc[10:]
-    #
-    # print("train_label {} string {}".format(len(train_label), len(train_label.to_string())))
-    # tokenizer = CustomTokenizer(max_length=30, max_vocab_size=5000)
-    # # for sentence in train_label.to_string():
-    # #     print(sentence)
-    #
-    # tokenizer.fit(train_label.iloc[:, 1])
-    #
-    # print(train_label)
-    # exit(0)
 
     max_length = 30
     batch_size = 32
@@ -286,14 +272,14 @@ if __name__ == '__main__':
     dropout_rate = 0.1
     epochs = args.epochs
     learning_rate = 5e-5
-    device = torch.device("cuda:0")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     max_vocab_size = 5000
 
     if args.pause:
         nsml.paused(scope=locals())
 
     if args.mode == 'train':
-        DATASET_PATH = "/home/aidev/data/AI-Hub/SeniorVoiceCommands/train"
+        DATASET_PATH = args.path_in
         # DATASET_PATH = "/Users/changsin/PycharmProjects/ModelTrain/data/senior_voice_commands/train"
         file_list, label = path_loader(DATASET_PATH, args.divide_id, args.use_column)
 
@@ -328,7 +314,6 @@ if __name__ == '__main__':
         valid_dataloader = DataLoader(valid_dataset,
                                       batch_size=batch_size,
                                       shuffle=False)
-        # exit(0)
 
         model = Transformer(
             num_layers=num_layers,
@@ -347,7 +332,10 @@ if __name__ == '__main__':
         optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
         criterion = nn.CrossEntropyLoss()
 
-        wandb.init("voice-recognition")
+        use_wandb = False
+        if use_wandb:
+            wandb.init("voice-recognition")
+
         for epoch in range(args.epochs):
             gc.collect()
             total_train_loss, total_valid_loss = 0, 0
@@ -361,17 +349,17 @@ if __name__ == '__main__':
                 batch_loss, batch_acc, lr = train_step(batch, training)
                 total_train_loss += batch_loss
                 total_train_acc += batch_acc
-                wandb.log({
-                    "train_batch_acc": batch_acc,
-                    "train_batch_loss":batch_loss})
+                if use_wandb:
+                    wandb.log({"train_batch_acc": batch_acc, "train_batch_loss":batch_loss})
 
                 avg_batch_loss += batch_loss
                 avg_batch_acc += batch_acc
                 iterations += 1
 
-            wandb.log({
-                "avg_train_batch_acc": avg_batch_acc / float(iterations),
-                "avg_train_batch_loss": avg_batch_loss / float(iterations)})
+            if use_wandb:
+                wandb.log({
+                    "avg_train_batch_acc": avg_batch_acc / float(iterations),
+                    "avg_train_batch_loss": avg_batch_loss / float(iterations)})
 
             print(f'avg_train_batch_acc: {avg_batch_acc / float(iterations)}')
             print(f'avg_train_batch_loss: {avg_batch_acc / float(iterations)}')
@@ -384,17 +372,17 @@ if __name__ == '__main__':
                 batch_loss, batch_acc = train_step(batch, training)
                 total_valid_loss += batch_loss
                 total_valid_acc += batch_acc
-                wandb.log({
-                    "valid_batch_acc": batch_acc,
-                    "valid_batch_loss": batch_loss})
+                if use_wandb:
+                    wandb.log({"valid_batch_acc": batch_acc, "valid_batch_loss": batch_loss})
 
                 avg_batch_loss += batch_loss
                 avg_batch_acc += batch_acc
                 iterations += 1
 
-            wandb.log({
-                "avg_valid_batch_acc": avg_batch_acc/float(iterations),
-                "avg_valid_batch_loss": avg_batch_loss/float(iterations)})
+            if use_wandb:
+                wandb.log({"avg_valid_batch_acc": avg_batch_acc/float(iterations),
+                           "avg_valid_batch_loss": avg_batch_loss/float(iterations)})
+
             print(f'avg_valid_batch_acc: {avg_batch_acc / float(iterations)}')
             print(f'avg_valid_batch_loss: {avg_batch_acc / float(iterations)}')
 
@@ -419,9 +407,10 @@ if __name__ == '__main__':
                 'device': device
             }
 
-            wandb.log({
-                "total_train_loss": total_train_loss, "total_valid_loss": total_valid_loss,
-                "total_train_acc": total_train_acc,   "total_valid_acc": total_valid_acc
+            if use_wandb:
+                wandb.log({
+                    "total_train_loss": total_train_loss, "total_valid_loss": total_valid_loss,
+                    "total_train_acc": total_train_acc,   "total_valid_acc": total_valid_acc
                        })
             print("Writing to ./checkpoint{}".format(args.use_column))
             save_checkpoint(checkpoint=dict_for_infer, dir='./checkpoint'.format(args.use_column))

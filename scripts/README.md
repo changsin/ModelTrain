@@ -1,4 +1,4 @@
-# Model Train
+# Scripts related to training ML Models
 
 The project contains ML model training and related preprocessing scripts
 
@@ -20,20 +20,6 @@ pip install -r requirements.txt
 
 ## Train
 
-### 1. voice-recognition
-For 명령어
-
-The command below will run 2 runs with 20 epochs each
-
-Run 1: use_column 1 will use AI-Hub labels 
-Run 2: use_column 2 will use Testworks labels 
-
-The option --divide 40000 will use only the first 40,000 files & labels.
-This is to cut down the time to train (taks a long time)
-
-```commandline
-python3 main.py --epochs 20 --divide 40000 --use_column 1 ; python3 main.py --epochs 20 --divide 40000 --use_column 2
-```
 
 ## Convert Labels
 
